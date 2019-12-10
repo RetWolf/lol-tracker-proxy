@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gin-contrib/cors"
@@ -36,7 +37,7 @@ func main() {
 	router.Use(cors.Default())
 
 	router.GET("/lol/summoner/v4/summoners/by-name/:name", func(c *gin.Context) {
-		summonerName := c.Param("name") // TODO: should see if this is safe to just make requests with. i.e : can users inject something here?
+		summonerName := url.PathEscape(c.Param("name"))
 		client := &http.Client{}
 		req, err := http.NewRequest("GET", fmt.Sprintf("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/%s", summonerName), nil)
 		if err != nil {
