@@ -21,7 +21,7 @@ type Summoner struct {
 	SummonerLevel int
 	AccountID     string
 	ID            string
-	RevisionDate  uint64
+	RevisionDate  int
 }
 
 func main() {
@@ -35,6 +35,62 @@ func main() {
 	router := gin.Default()
 
 	router.Use(cors.Default())
+
+	router.GET("/lol/match/v4/matches/:matchID", func(c *gin.Context) {
+		matchID := url.PathEscape(c.Param("matchID"))
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", fmt.Sprintf("https://na1.api.riotgames.com/lol/match/v4/matches/%s", matchID), nil)
+		if err != nil {
+			fmt.Printf("error creating request object: %v", err)
+			c.JSON(500, gin.H{
+				"error": err,
+			})
+		}
+
+		req.Header.Add("X-Riot-Token", riotAPIKey)
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Printf("error making request: %v", err)
+			c.JSON(500, gin.H{
+				"error": err,
+			})
+		}
+
+		defer resp.Body.Close()
+
+		match := Match{}
+		json.NewDecoder(resp.Body).Decode(&match)
+
+		c.JSON(200, match)
+	})
+
+	router.GET("/lol/match/v4/matchlists/by-account/:accountID", func(c *gin.Context) {
+		accountID := url.PathEscape(c.Param("accountID"))
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", fmt.Sprintf("https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/%s", accountID), nil)
+		if err != nil {
+			fmt.Printf("error creating request object: %v", err)
+			c.JSON(500, gin.H{
+				"error": err,
+			})
+		}
+
+		req.Header.Add("X-Riot-Token", riotAPIKey)
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Printf("error making request: %v", err)
+			c.JSON(500, gin.H{
+				"error": err,
+			})
+		}
+
+		defer resp.Body.Close()
+
+		list := MatchList{}
+		json.NewDecoder(resp.Body).Decode(&list)
+
+		c.JSON(200, list)
+	})
 
 	router.GET("/lol/summoner/v4/summoners/by-name/:name", func(c *gin.Context) {
 		summonerName := url.PathEscape(c.Param("name"))

@@ -1,5 +1,25 @@
 package main
 
+// MatchList contains a list of MatchReferences
+type MatchList struct {
+	Matches    []MatchReference
+	TotalGames int
+	StartIndex int
+	EndIndex   int
+}
+
+// MatchReference contains basic information about the game and a reference to the MatchID
+type MatchReference struct {
+	Lane       string
+	GameID     int // MatchID
+	Champion   int
+	PlatformID string
+	Season     int
+	Queue      int
+	Role       string
+	Timestamp  int
+}
+
 type Match struct {
 	SeasonID              int
 	QueueID               int
@@ -201,24 +221,4 @@ type ParticipantTimeline struct {
 type Mastery struct {
 	MasteryID int
 	Rank      int
-}
-
-// MatchList contains a list of MatchReferences
-type MatchList struct {
-	Matches    []MatchReference
-	TotalGames int
-	StartIndex int
-	EndIndex   int
-}
-
-// MatchReference contains basic information about the game and a reference to the MatchID
-type MatchReference struct {
-	Lane       string
-	GameID     int // MatchID
-	Champion   int
-	PlatformID string
-	Season     int
-	Queue      int
-	Role       string
-	Timestamp  int
 }
